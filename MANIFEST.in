@@ -1,0 +1,8 @@
+include .gitignore
+recursive-include .github *.yml
+recursive-include examples *.py *.md
+recursive-include notebooks *.ipynb
+recursive-include tests *.py
+prune notebooks/.ipynb_checkpoints
+prune notebooks/outputs
+global-exclude __pycache__ *.py[cod]

@@ -1,0 +1,34 @@
+# Python environments, caches, and builds
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+.coverage
+htmlcov/
+
+# Local tools and credentials
+.agents/
+.codex/
+.aws/
+.env
+.env.*
+!.env.example
+.DS_Store
+.mplconfig/
+
+# Generated experiments and notebook previews
+/results*/
+/smoke/
+/sensor_comparison.*
+/comparison.json
+notebooks/*.html
+notebooks/validation.json
+notebooks/outputs/
+.ipynb_checkpoints/
+notebooks/.ipython/
+notebooks/.jupyter/
+notebooks/.runtime/
