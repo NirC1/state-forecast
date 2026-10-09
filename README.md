@@ -8,6 +8,12 @@ The library supports arbitrary state dimensions, fixed linear observation
 operators, continuous or discrete dynamics, and optional physical constraints.
 The Lorenz example demonstrates the method with one, two, or three noisy sensors.
 
+![One-sensor Lorenz state estimation: measured u and inferred v and w compared with the true state](docs/images/state-estimation.png)
+
+*State reconstruction from one noisy sensor (`u`) on held-out trajectory 0.
+The inferred `w` remains biased, illustrating that accurate sensor estimates
+alone do not establish full state recovery. Shading marks initial convergence.*
+
 ## Installation
 
 Requires Python 3.11 or newer. The library depends only on PyTorch.
@@ -97,6 +103,13 @@ For command-line experiments and the model assumptions, see
 quadratic interactions; useful sensor forecasts do not guarantee exact recovery
 of an unmeasured coordinate or the true coefficients. Results from a single
 synthetic seed do not establish robustness.
+
+![One-sensor forecast RMSE versus lead time compared with persistence and fixed correction](docs/images/forecast-error.png)
+
+*Forecast error against noise-free `u`, aggregated over 64 test sequences and
+four origins per sequence. The dashed vertical line marks the 0.4-unit training
+horizon. Fixed correction uses the same learned dynamics with the neural
+corrector disabled. Both figures come from the notebook's saved single-seed run.*
 
 ## Development
 
