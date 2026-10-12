@@ -1,4 +1,6 @@
 """Exercise the library with systems other than Lorenz and arbitrary state sizes."""
+import itertools
+
 import pytest
 import torch
 from torch import nn
@@ -61,12 +63,35 @@ def test_measurement_only_training_learns_scalar_dynamics_and_restores_best():
                  on_validation=progress.append)
     assert result.best_validation_loss < 0.1 * result.history[0]['val_loss']
     assert len(progress) == 5
+    assert all(row['val_loss'] == row['val_future'] for row in result.history)
+    assert all(row['train_loss'] == row['train_future'] for row in result.history)
     assert not model.training
     assert all(not p.requires_grad for p in model.parameters())
     for name, value in model.state_dict().items():
         torch.testing.assert_close(value, result.best_state[name])
     with pytest.raises(ValueError, match='no trainable parameters'):
         fit(model, measurements, validation, TrainingConfig(origins=(3,), horizon=4, updates=1))
+
+
+def test_denoising_with_true_dynamics_attains_forecast_bayes_risk():
+    # Enumerate X and two independent sensor errors in {-1, +1}. The state
+    # stays constant, and E[Y1 | Y0] = Y0/2. Penalizing current disagreement
+    # would make the incorrect contraction cheaper than this true model.
+    data = torch.tensor([[[x + e0], [x + e1]]
+                         for x, e0, e1 in itertools.product((-1., 1.), repeat=3)])
+    true_model = JointEstimator(ScalarDynamics(1.), torch.ones(1, 1), hidden_width=1)
+    with torch.no_grad():
+        true_model.corrector[0].weight.copy_(torch.tensor([[0., 1.]]))
+        true_model.corrector[0].bias.zero_()
+        true_model.corrector[-1].weight.fill_(-1. / torch.tanh(torch.tensor(2.)))
+    wrong_model = JointEstimator(ScalarDynamics(.5), torch.ones(1, 1), hidden_width=1)
+    true_loss, true_future, true_current = true_model.loss(data, (0,), 1)
+    wrong_loss, _, wrong_current = wrong_model.loss(data, (0,), 1)
+    torch.testing.assert_close(true_future, torch.tensor(1.5))
+    torch.testing.assert_close(true_current, torch.tensor(.5))
+    torch.testing.assert_close(wrong_current, torch.tensor(0.))
+    torch.testing.assert_close(true_loss, true_future)
+    torch.testing.assert_close(true_loss, wrong_loss)
 
 
 def test_training_rejects_missing_targets_and_nonfinite_data():

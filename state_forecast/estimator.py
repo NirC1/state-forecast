@@ -95,9 +95,14 @@ class JointEstimator(nn.Module):
             future.append(state)
         return torch.stack(future, -2)
 
-    def loss(self, measurements: Tensor, origins: Sequence[int], horizon: int,
-             current_weight: float = 0.1) -> tuple[Tensor, Tensor, Tensor]:
-        """Return total, future and current MSE; count shared history times once."""
+    def loss(self, measurements: Tensor, origins: Sequence[int],
+             horizon: int) -> tuple[Tensor, Tensor, Tensor]:
+        """Return objective, future MSE and diagnostic current MSE.
+
+        The objective is future MSE alone. Current disagreement with already
+        assimilated noisy measurements is recorded once per history time and
+        does not contribute to training or checkpoint selection.
+        """
         if measurements.ndim != 3:
             raise ValueError("Supply a [B,T,M] measurement tensor.")
         origins = tuple(origins)
@@ -106,12 +111,10 @@ class JointEstimator(nn.Module):
             raise ValueError("Each origin must have a history and a complete future target.")
         if len(set(origins)) != len(origins):
             raise ValueError("Forecast origins must be distinct.")
-        if not math.isfinite(current_weight) or current_weight < 0:
-            raise ValueError("current_weight must be nonnegative and finite.")
         history = measurements[:, :max(origins) + 1]
         corrected = self.filter(history)
         current_loss = (self.observe(corrected) - history).square().mean()
         future_states = self.forecast(corrected[:, list(origins)], horizon)
         targets = torch.stack([measurements[:, o + 1:o + 1 + horizon] for o in origins], 1)
         future_loss = (self.observe(future_states) - targets).square().mean()
-        return future_loss + current_weight * current_loss, future_loss, current_loss
+        return future_loss, future_loss, current_loss

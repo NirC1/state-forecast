@@ -57,10 +57,17 @@ For discrete dynamics, pass the transition module directly to `JointEstimator`.
 condition the neural corrector without changing the physical loss; an optional
 `state_projection` applies differentiable constraints after correction.
 
-Training minimizes `future_MSE + current_weight * current_MSE` using measurement
-sequences only. Multiple forecast origins share a causal history pass; gradients
-flow through the entire history. `fit` selects and restores the best validation
-model, then freezes its parameters by default. Call `model.requires_grad_(True)`
+Training minimizes future measurement MSE using measurement sequences only.
+Multiple forecast origins share a causal history pass; gradients
+flow through the entire history. Current disagreement is logged as a diagnostic
+and does not enter training or checkpoint selection: matching an already
+assimilated noisy measurement can discourage denoising and bias learned dynamics.
+`model.loss` returns `(objective, future_MSE, current_MSE)`, with
+`objective == future_MSE`. The `current_weight` argument and configuration field
+are no longer supported.
+
+`fit` selects and restores the model with the lowest validation future MSE,
+then freezes its parameters by default. Call `model.requires_grad_(True)`
 before a subsequent training phase, which starts a fresh Adam optimizer.
 
 For online inference, reset the posterior at the start of each independent sequence:

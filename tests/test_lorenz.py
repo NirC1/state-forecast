@@ -57,3 +57,17 @@ def test_one_sensor_evaluation_saves_consistent_arrays_and_metrics(tmp_path):
         assert np.isfinite(arrays["forecasts"]).all()
         np.testing.assert_allclose(rmse, metrics["forecast_sensor_rmse_first_0.4_time_units"])
     assert (tmp_path / "forecast_errors.csv").is_file()
+
+
+def test_checkpoint_with_legacy_current_weight_can_be_loaded(tmp_path):
+    from dataclasses import asdict
+
+    config = Config()
+    model = make_model(config)
+    legacy_config = {**asdict(config), "current_weight": .1}
+    checkpoint = tmp_path / "legacy.pt"
+    torch.save({"model": model.state_dict(), "config": legacy_config}, checkpoint)
+    restored, restored_config, _ = load_checkpoint(checkpoint)
+    assert restored_config == config
+    for name, value in model.state_dict().items():
+        torch.testing.assert_close(restored.state_dict()[name], value)

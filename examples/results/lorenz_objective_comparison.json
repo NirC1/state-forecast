@@ -1,0 +1,316 @@
+{
+  "training_seed": 7,
+  "test_seed": 101,
+  "train_validation_test_sequences": [
+    256,
+    64,
+    64
+  ],
+  "forecast_origins": [
+    80,
+    100,
+    120,
+    140
+  ],
+  "versions": {
+    "python": "3.14.4",
+    "torch": "2.9.1+cpu",
+    "numpy": "2.5.3"
+  },
+  "runs": [
+    {
+      "sensors": 1,
+      "baseline": {
+        "forecast_sensor_rmse": 0.44026634097099304,
+        "forecast_sensor_rmse_first_1_time_unit": 2.262721061706543,
+        "state_rmse": [
+          0.20731817185878754,
+          1.0349249839782715,
+          7.0531182289123535
+        ],
+        "learned_coefficients": [
+          -9.808658599853516,
+          11.01136302947998,
+          20.940643310546875,
+          -1.0191065073013306,
+          -3.1757726669311523
+        ],
+        "coefficient_relative_error_percent": [
+          1.9134140014648435,
+          10.113630294799805,
+          25.211988176618306,
+          1.9106507301330566,
+          19.09147500991822
+        ],
+        "max_coefficient_relative_error_percent": 25.211988176618306,
+        "persistence_sensor_rmse": 6.494246482849121,
+        "forecast_leads": {
+          "0.01": 0.21688053011894226,
+          "0.10": 0.22642847895622253,
+          "0.40": 0.8282198309898376,
+          "1.00": 4.1354498863220215,
+          "2.00": 10.154142379760742
+        },
+        "best_validation_update": 400
+      },
+      "future_only": {
+        "forecast_sensor_rmse": 0.44453272223472595,
+        "forecast_sensor_rmse_first_1_time_unit": 1.9427812099456787,
+        "state_rmse": [
+          0.2181033194065094,
+          0.6802099347114563,
+          6.627272129058838
+        ],
+        "learned_coefficients": [
+          -9.922954559326172,
+          10.872610092163086,
+          21.3546085357666,
+          -0.8104674220085144,
+          -3.196617603302002
+        ],
+        "coefficient_relative_error_percent": [
+          0.7704544067382812,
+          8.72610092163086,
+          23.73354094369071,
+          18.95325779914856,
+          19.87316012382508
+        ],
+        "max_coefficient_relative_error_percent": 23.73354094369071,
+        "persistence_sensor_rmse": 6.494246482849121,
+        "forecast_leads": {
+          "0.01": 0.2088230401277542,
+          "0.10": 0.24483484029769897,
+          "0.40": 0.8300249576568604,
+          "1.00": 2.809434175491333,
+          "2.00": 9.929118156433105
+        },
+        "best_validation_update": 700
+      },
+      "forecast_rmse_change_percent": 0.9690455223816397
+    },
+    {
+      "sensors": 2,
+      "baseline": {
+        "forecast_sensor_rmse": 0.40934184193611145,
+        "forecast_sensor_rmse_first_1_time_unit": 1.8724201917648315,
+        "state_rmse": [
+          0.5458646416664124,
+          0.25357112288475037,
+          4.4205546379089355
+        ],
+        "learned_coefficients": [
+          -9.510613441467285,
+          9.887166023254395,
+          22.742904663085938,
+          -0.38506782054901123,
+          -3.173285484313965
+        ],
+        "coefficient_relative_error_percent": [
+          4.893865585327148,
+          1.1283397674560547,
+          18.775340488978795,
+          61.49321794509888,
+          18.99820566177369
+        ],
+        "max_coefficient_relative_error_percent": 61.49321794509888,
+        "persistence_sensor_rmse": 7.520507335662842,
+        "forecast_leads": {
+          "0.01": 0.3702891767024994,
+          "0.10": 0.22963258624076843,
+          "0.40": 0.6922624111175537,
+          "1.00": 3.2151105403900146,
+          "2.00": 7.847382545471191
+        },
+        "best_validation_update": 700
+      },
+      "future_only": {
+        "forecast_sensor_rmse": 0.45405906438827515,
+        "forecast_sensor_rmse_first_1_time_unit": 1.6953893899917603,
+        "state_rmse": [
+          0.5657278895378113,
+          0.31859323382377625,
+          3.9514496326446533
+        ],
+        "learned_coefficients": [
+          -9.988178253173828,
+          9.950081825256348,
+          23.19468879699707,
+          -0.2738124132156372,
+          -3.1578540802001953
+        ],
+        "coefficient_relative_error_percent": [
+          0.11821746826171874,
+          0.49918174743652344,
+          17.161825725010463,
+          72.61875867843628,
+          18.41952800750733
+        ],
+        "max_coefficient_relative_error_percent": 72.61875867843628,
+        "persistence_sensor_rmse": 7.520507335662842,
+        "forecast_leads": {
+          "0.01": 0.41972753405570984,
+          "0.10": 0.3429711163043976,
+          "0.40": 0.6389925479888916,
+          "1.00": 2.556457042694092,
+          "2.00": 7.043031692504883
+        },
+        "best_validation_update": 1100
+      },
+      "forecast_rmse_change_percent": 10.9241758039343
+    },
+    {
+      "sensors": 3,
+      "baseline": {
+        "forecast_sensor_rmse": 0.3704788386821747,
+        "forecast_sensor_rmse_first_1_time_unit": 1.8028500080108643,
+        "state_rmse": [
+          0.30993640422821045,
+          0.2432664930820465,
+          0.2844024896621704
+        ],
+        "learned_coefficients": [
+          -9.919081687927246,
+          9.872797012329102,
+          27.77284049987793,
+          -0.7856650948524475,
+          -2.6665446758270264
+        ],
+        "coefficient_relative_error_percent": [
+          0.8091831207275391,
+          1.2720298767089844,
+          0.8112839290073939,
+          21.43349051475525,
+          0.004574656486505679
+        ],
+        "max_coefficient_relative_error_percent": 21.43349051475525,
+        "persistence_sensor_rmse": 8.95522689819336,
+        "forecast_leads": {
+          "0.01": 0.2672100067138672,
+          "0.10": 0.21488235890865326,
+          "0.40": 0.6750856041908264,
+          "1.00": 3.3250722885131836,
+          "2.00": 5.7037739753723145
+        },
+        "best_validation_update": 800
+      },
+      "future_only": {
+        "forecast_sensor_rmse": 0.3546072840690613,
+        "forecast_sensor_rmse_first_1_time_unit": 1.8774503469467163,
+        "state_rmse": [
+          0.34781524538993835,
+          0.24649542570114136,
+          0.29046082496643066
+        ],
+        "learned_coefficients": [
+          -9.918375015258789,
+          9.87258243560791,
+          27.688880920410156,
+          -0.7146009206771851,
+          -2.6592118740081787
+        ],
+        "coefficient_relative_error_percent": [
+          0.8162498474121094,
+          1.2741756439208984,
+          1.1111395699637276,
+          28.539907932281494,
+          0.2795547246932928
+        ],
+        "max_coefficient_relative_error_percent": 28.539907932281494,
+        "persistence_sensor_rmse": 8.95522689819336,
+        "forecast_leads": {
+          "0.01": 0.28102290630340576,
+          "0.10": 0.2181909829378128,
+          "0.40": 0.643613338470459,
+          "1.00": 3.221836805343628,
+          "2.00": 6.363051414489746
+        },
+        "best_validation_update": 800
+      },
+      "forecast_rmse_change_percent": -4.284065095207568
+    }
+  ],
+  "baseline_commit": "f9fc1e4",
+  "objectives": {
+    "baseline": "future_MSE + 0.1 * current_MSE",
+    "future_only": "future_MSE"
+  },
+  "settings": {
+    "dt": 0.01,
+    "noise_std": 0.3,
+    "integrator": "rk4",
+    "training_origins": [
+      60,
+      80,
+      100
+    ],
+    "batch_size": 48,
+    "validation_interval": 100,
+    "training_score_sequences": 64,
+    "hidden_width": 64,
+    "max_grad_norm": 20.0,
+    "coefficient_order": [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e"
+    ],
+    "true_coefficients": [
+      -10.0,
+      10.0,
+      28.0,
+      -1.0,
+      -2.6666666666666665
+    ],
+    "schedules": {
+      "1_and_3_sensors": [
+        {
+          "updates": 800,
+          "horizon": 40,
+          "dynamics_lr": 0.04,
+          "corrector_lr": 0.0005
+        },
+        {
+          "updates": 800,
+          "horizon": 40,
+          "dynamics_lr": 0.02,
+          "corrector_lr": 0.00025
+        }
+      ],
+      "2_sensors": [
+        {
+          "updates": 1600,
+          "horizon": 40,
+          "dynamics_lr": 0.04,
+          "corrector_lr": 0.002
+        },
+        {
+          "updates": 1200,
+          "horizon": 100,
+          "dynamics_lr": 0.04,
+          "corrector_lr": 0.0005
+        }
+      ]
+    }
+  },
+  "verification": {
+    "matching_initial_weights": true,
+    "matching_settings_except_objective": true,
+    "matching_test_truth_and_measurements": true,
+    "minimum_validation_loss_checkpoint": true,
+    "loss_arithmetic": true,
+    "finite_evaluation_arrays": true,
+    "recomputed_forecast_and_state_rmse": true
+  },
+  "forecast_scoring_horizons": [
+    40,
+    100
+  ],
+  "metric_definitions": {
+    "forecast_sensor_rmse": "RMSE against noise-free truth over the first 40 leads, all measured sensors, 64 test trajectories, and four origins per trajectory.",
+    "forecast_sensor_rmse_first_1_time_unit": "RMSE against noise-free truth over the first 100 leads with the same sensors, trajectories, and origins.",
+    "state_rmse": "Per-coordinate RMSE in [u, v, w] order, excluding the first 80 samples of each test trajectory.",
+    "coefficient_relative_error_percent": "100 * abs((learned - true) / true), in [a, b, c, d, e] order.",
+    "forecast_rmse_change_percent": "100 * (future-only / penalized - 1) for the first 40 leads."
+  }
+}

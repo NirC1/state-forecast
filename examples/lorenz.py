@@ -37,7 +37,6 @@ class Config:
     updates: int = 1600
     origins: tuple[int, ...] = (60, 80, 100)
     horizon: int = 40
-    current_weight: float = 0.1
     hidden_width: int = 64
     dynamics_lr: float = 0.04
     corrector_lr: float = 0.002
@@ -79,7 +78,11 @@ def make_model(config: Config, observation: Tensor | None = None) -> JointEstima
 
 def load_checkpoint(path: Path, *, freeze: bool = True):
     saved = torch.load(path, map_location="cpu", weights_only=True)
-    config = Config(**saved["config"])
+    config_values = dict(saved["config"])
+    # Older checkpoints can still be evaluated or used to initialize a new run.
+    # Continued training uses the current future-only objective.
+    config_values.pop("current_weight", None)
+    config = Config(**config_values)
     model = make_model(config)
     model.load_state_dict(saved["model"])
     model.eval()
@@ -92,7 +95,6 @@ def training_config(config: Config) -> TrainingConfig:
     return TrainingConfig(origins=tuple(config.origins), horizon=config.horizon,
                           updates=config.updates, batch_size=config.batch_size,
                           dynamics_lr=config.dynamics_lr, corrector_lr=config.corrector_lr,
-                          current_weight=config.current_weight,
                           validate_every=config.validate_every, seed=config.seed + 20)
 
 
