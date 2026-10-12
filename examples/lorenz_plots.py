@@ -98,12 +98,12 @@ def make_figures(output: Path, config):
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), layout="constrained")
     steps = [row["step"] for row in log]
-    axes[0].semilogy(steps, [row["train_loss"] for row in log], color=BLUE,
+    axes[0].semilogy(steps, [row["train_future"] for row in log], color=BLUE,
                      linewidth=1.8, label="Training (fixed 64-sequence subset)")
-    axes[0].semilogy(steps, [row["val_loss"] for row in log], color=ORANGE,
+    axes[0].semilogy(steps, [row["val_future"] for row in log], color=ORANGE,
                      linestyle="--", linewidth=1.8, label="Validation (64 independent sequences)")
     axes[0].axvline(metrics["best_validation_update"], color=GRAY, linestyle=":", linewidth=1)
-    axes[0].set(xlabel="Adam update", ylabel="Future MSE + 0.1 × current MSE (log scale)",
+    axes[0].set(xlabel="Adam update", ylabel="Future measurement MSE (log scale)",
                 title=training_title, xlim=(0, steps[-1]))
     axes[0].grid(axis="y", which="major", linewidth=0.7)
     axes[0].legend(fontsize=8.5, frameon=False)

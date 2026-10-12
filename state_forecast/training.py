@@ -21,7 +21,6 @@ class TrainingConfig:
     batch_size: int = 32
     dynamics_lr: float = 0.001
     corrector_lr: float = 0.001
-    current_weight: float = 0.1
     validate_every: int = 100
     seed: int = 7
     max_grad_norm: float | None = 20.0
@@ -36,8 +35,6 @@ class TrainingConfig:
             raise ValueError("Supply distinct nonnegative forecast origins.")
         if any(not math.isfinite(lr) or lr <= 0 for lr in (self.dynamics_lr, self.corrector_lr)):
             raise ValueError("Learning rates must be positive and finite.")
-        if not math.isfinite(self.current_weight) or self.current_weight < 0:
-            raise ValueError("current_weight must be nonnegative and finite.")
         if self.max_grad_norm is not None and (not math.isfinite(self.max_grad_norm) or self.max_grad_norm <= 0):
             raise ValueError("max_grad_norm must be positive and finite, or None.")
 
@@ -61,7 +58,7 @@ class TrainingResult:
 def fit(model: JointEstimator, train_measurements: Tensor, validation_measurements: Tensor,
         config: TrainingConfig, *, on_validation: Callable[[ValidationProgress], None] | None = None
         ) -> TrainingResult:
-    """Fit theta and phi jointly, restore the best validation model and optionally freeze.
+    """Fit future measurement MSE, restore the best validation model and optionally freeze.
 
     Only measurement tensors enter this API. Batch members are independent
     sequences, sampled with replacement by a local seeded generator. This
@@ -95,7 +92,7 @@ def fit(model: JointEstimator, train_measurements: Tensor, validation_measuremen
                                     generator=generator, device=train_measurements.device)
             optimizer.zero_grad(set_to_none=True)
             loss, _, _ = model.loss(train_measurements[indices], config.origins,
-                                    config.horizon, config.current_weight)
+                                    config.horizon)
             if not torch.isfinite(loss):
                 raise RuntimeError(f"Non-finite training loss at update {step}.")
             loss.backward()
@@ -107,9 +104,9 @@ def fit(model: JointEstimator, train_measurements: Tensor, validation_measuremen
             model.eval()
             with torch.no_grad():
                 train_scores = model.loss(train_measurements[:config.train_score_sequences],
-                                          config.origins, config.horizon, config.current_weight)
+                                          config.origins, config.horizon)
                 val_scores = model.loss(validation_measurements, config.origins,
-                                        config.horizon, config.current_weight)
+                                        config.horizon)
             if not all(torch.isfinite(score) for score in (*train_scores, *val_scores)):
                 raise RuntimeError(f"Non-finite validation or diagnostic loss at update {step}.")
             record = {"step": step, "elapsed_seconds": time.monotonic() - started,

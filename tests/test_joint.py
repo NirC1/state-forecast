@@ -56,7 +56,7 @@ def test_multiple_origins_match_independent_prefixes_and_current_count_once():
     torch.testing.assert_close(future, torch.stack(independent).mean())
     history = measurements[:, :max(origins) + 1]
     torch.testing.assert_close(current, (model.observe(model.filter(history)) - history).square().mean())
-    torch.testing.assert_close(total, future + 0.1 * current)
+    torch.testing.assert_close(total, future)
 
 
 def test_generic_observation_operator_and_frozen_forecast():
