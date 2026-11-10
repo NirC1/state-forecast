@@ -1,12 +1,71 @@
 # State Forecast
 
-Joint state estimation and dynamics learning from measurement sequences, built
-with PyTorch. Train a differentiable dynamics model and a neural measurement
-corrector together, then assimilate incoming observations and forecast forward.
+State Forecast fits dynamical equations to noisy, partially observed time
+series. The joint trajectory-fitting examples estimate a shared set of dynamics
+coefficients and a separate latent state trajectory for each training sequence.
+The fitted equations then support state estimation and forecasting from new
+measurement histories.
 
-The library supports arbitrary state dimensions, fixed linear observation
-operators, continuous or discrete dynamics, and optional physical constraints.
-The Lorenz example demonstrates the method with one, two, or three noisy sensors.
+## Joint trajectory fitting
+
+Each example specifies a candidate rate model, an observation operator $H$,
+and a sampling interval. Sparse Gauss–Newton fits all latent states $x_{i,k}$
+and a single coefficient vector $\theta$ by minimizing weighted sensor
+residuals and one-step transition defects across training trajectories.
+
+$$
+\sum_i\sum_{k=0}^{T-1}\left\|R^{-1/2}(Hx_{i,k}-y_{i,k})\right\|^2
++
+\sum_i\sum_{k=0}^{T-2}\left\|Q^{-1/2}
+\left(x_{i,k+1}-\Phi_\theta(x_{i,k})\right)\right\|^2 .
+$$
+
+Each training trajectory contains $T$ samples, with measurements $y_{i,k}$.
+The map $\Phi_\theta$ advances the candidate dynamics by one RK4 step. The
+diagonal matrices $R$ and $Q$ contain squared measurement and transition-defect
+scales. The examples use zero coefficient regularization and reserve simulated
+state truth for evaluation.
+
+1. Fit the shared coefficients and training trajectories from several initial
+   coefficient vectors.
+2. Select the coefficient fit and history length by forecast RMSE on future
+   validation readings.
+3. Freeze the coefficients and fit each held-out history through its forecast
+   origin. Use the final fitted state to initialize a rollout with the learned
+   dynamics.
+
+### Run the notebooks
+
+Use Python 3.11 or newer and launch JupyterLab from the repository root.
+
+```bash
+python -m pip install -e ".[notebooks]"
+python -m jupyter lab
+```
+
+Open either notebook from the `notebooks/` directory in JupyterLab. Both
+generate seeded synthetic data, run on CPU, and include saved
+results. Endpoint RMSE below pools 13 forecast origins on each of 48 held-out
+trajectories.
+
+| Notebook | Measured coordinates | Hidden coordinate | Selected history | Hidden-state RMSE |
+| --- | --- | --- | ---: | ---: |
+| [Pendulum](notebooks/pendulum_joint_fit.ipynb) | Angle | Angular velocity | 31 readings (1.50 s) | 0.04733 rad/s |
+| [Lorenz](notebooks/lorenz_joint_fit.ipynb) | `u`, `v` | `w` | 81 readings (0.80 time units) | 0.07905 |
+
+The pendulum fixes the kinematic equation and estimates four acceleration
+coefficients. The Lorenz fit fixes the quadratic interactions and recovers
+all five fitted coefficients within 0.32% of their simulator values. These
+results characterize the supplied model families and sensor configurations.
+The notebooks share a [sparse least-squares solver](examples/trajectory_fit.py).
+
+## PyTorch forecasting library
+
+The PyTorch API pairs a differentiable dynamics model with a learned
+measurement corrector for online state estimation. It supports arbitrary
+state dimensions, fixed linear observations, continuous or discrete dynamics,
+and optional state constraints. The [Lorenz training notebook](notebooks/lorenz.ipynb)
+illustrates the forecast-loss workflow.
 
 ![One-sensor Lorenz state estimation: measured u and inferred v and w compared with the true state](docs/images/state-estimation.png)
 
@@ -14,7 +73,7 @@ The Lorenz example demonstrates the method with one, two, or three noisy sensors
 The inferred `w` remains biased, illustrating that accurate sensor estimates
 alone do not establish full state recovery. Shading marks initial convergence.*
 
-## Installation
+### Library installation
 
 Requires Python 3.11 or newer. The library depends only on PyTorch.
 
@@ -28,7 +87,7 @@ For the examples and tests, install `".[examples,test]"` instead. For the notebo
 install `".[notebooks,test]"`. To use CPU-only PyTorch, install it first from the
 [PyTorch CPU index](https://download.pytorch.org/whl/cpu).
 
-## Usage
+### Train and forecast
 
 Supply a PyTorch module that returns a state rate and an observation matrix whose
 rows map state components to sensors:
@@ -85,7 +144,7 @@ with torch.no_grad():
 parameters using standard PyTorch state dictionaries; reconstruct the same dynamics,
 observation matrix, correction scales, and architecture before loading.
 
-## Lorenz walkthrough
+### Lorenz walkthrough
 
 ```bash
 python -m pip install -e ".[notebooks,test]"
